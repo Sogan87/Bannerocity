@@ -1,0 +1,232 @@
+<html>
+  <head>
+    <title>Bannerocity - Personalized Online Sky Banners</title>
+
+    <link rel="stylesheet" type="text/css" href="bannerocity.css" />
+
+    <script type="text/javascript">
+      function validateNonEmpty(inputField, helpText) {
+        // Verificar se o valor de entrada contém algum texto
+        if (inputField.value.length == 0) {
+          // Os dados são inválidos, então notificar o usuário
+          helpText.innerHTML = "Please enter a value.";
+          return false;
+        } else {
+          helpText.innerHTML = "";
+          return true;
+        }
+      }
+
+      function validateBanner(inputField, helpText) {
+        // Verificar se o tamanho do banner corresponde ao tamanho de um tweet
+        if (inputField.value.length > 280) {
+          helpText.innerHTML = "Please enter a banner message with a maximum of 280 characters.";
+          return false;
+        } else {
+          helpText.innerHTML = "";
+          return true;
+        }
+      }
+
+      function validateZipCode(inputField, helpText) {
+        // Limitar o campo ZIP code a 5 dígitos
+        if (inputField.value.length > 5) {
+          inputField.value = inputField.value.slice(0, 5);
+        }
+
+        // Verificar se o código postal possui exatamente 5 dígitos numéricos
+        var zipCodePattern = /^\d{5}$/;
+        if (!zipCodePattern.test(inputField.value)) {
+          helpText.innerHTML = "Please enter a valid 5-digit ZIP code.";
+          return false;
+        } else {
+          helpText.innerHTML = "";
+          return true;
+        }
+      }
+
+      function validateDate(inputField, helpText) {
+        // Limitar o campo de data a 10 caracteres (YYYY-MM-DD)
+        if (inputField.value.length > 10) {
+          inputField.value = inputField.value.slice(0, 10);
+        }
+
+        // Incluir as barras automaticamente na data (ex: 2023-05-23)
+        if (inputField.value.length === 4 || inputField.value.length === 7) {
+          if (inputField.value.charAt(inputField.value.length - 1) !== '-') {
+            inputField.value += '-';
+          }
+        }
+
+        // Verificar se a data está no formato internacional (YYYY-MM-DD)
+        var datePattern = /^\d{4}-\d{2}-\d{2}$/;
+        if (!datePattern.test(inputField.value)) {
+          helpText.innerHTML = "Please enter a valid date in the format YYYY-MM-DD.";
+          return false;
+        } else {
+          helpText.innerHTML = "";
+          return true;
+        }
+      }
+
+      function validateName(inputField, helpText) {
+        // Verificar se o nome possui no máximo 28 caracteres com abreviação automática dos nomes do meio
+        var name = inputField.value;
+        if (name.length > 28) {
+          name = name.substring(0, 28);
+          // Verificar se o nome foi truncado, caso contrário, abreviar o nome do meio
+          if (name.indexOf(" ") !== -1 && name.lastIndexOf(" ") !== name.indexOf(" ")) {
+            var firstName = name.substring(0, name.indexOf(" "));
+            var middleNames = name.substring(name.indexOf(" ") + 1, name.lastIndexOf(" "));
+            var lastName = name.substring(name.lastIndexOf(" ") + 1);
+
+            var abbreviatedMiddleNames = middleNames.split(" ").map(function (middleName) {
+              return middleName.charAt(0) + ".";
+            });
+
+            name = firstName + " " + abbreviatedMiddleNames.join(" ") + " " + lastName;
+          }
+        }
+
+        // Atualizar o valor do campo de entrada com o nome formatado
+        inputField.value = name;
+
+        // Verificar se o campo de nome não está vazio após a formatação
+        if (name.trim().length === 0) {
+          helpText.innerHTML = "Please enter your name.";
+          return false;
+        } else {
+          helpText.innerHTML = "";
+          return true;
+        }
+      }
+
+      function validatePhone(inputField, helpText) {
+        // Remover todos os caracteres não numéricos do campo de telefone
+        var phoneNumber = inputField.value.replace(/\D/g, "");
+
+        // Limitar o campo de telefone a 11 dígitos
+        if (phoneNumber.length > 11) {
+          phoneNumber = phoneNumber.slice(0, 11);
+        }
+
+        // Formatar o número de telefone no formato brasileiro (DDDC-NUMERO)
+        var formattedPhoneNumber = phoneNumber.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+
+        // Atualizar o valor do campo de entrada com o número de telefone formatado
+        inputField.value = formattedPhoneNumber;
+
+        // Verificar se o número de telefone segue o padrão brasileiro (DDDC-NUMERO)
+        var phonePattern = /^\(\d{2}\) \d{5}-\d{4}$/;
+        if (!phonePattern.test(formattedPhoneNumber)) {
+          helpText.innerHTML = "Please enter a valid Brazilian phone number (DDDC-NUMERO).";
+          return false;
+        } else {
+          helpText.innerHTML = "";
+          return true;
+        }
+      }
+
+      function validateEmail(inputField, helpText) {
+        // Verificar se o email segue o padrão internacional
+        var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(inputField.value)) {
+          helpText.innerHTML = "Please enter a valid email address.";
+          return false;
+        } else {
+          helpText.innerHTML = "";
+          return true;
+        }
+      }
+
+      function validateForm() {
+        var messageInput = document.getElementById('message');
+        var zipcodeInput = document.getElementById('zipcode');
+        var dateInput = document.getElementById('date');
+        var nameInput = document.getElementById('name');
+        var phoneInput = document.getElementById('phone');
+        var emailInput = document.getElementById('email');
+
+        var messageHelp = document.getElementById('message_help');
+        var zipcodeHelp = document.getElementById('zipcode_help');
+        var dateHelp = document.getElementById('date_help');
+        var nameHelp = document.getElementById('name_help');
+        var phoneHelp = document.getElementById('phone_help');
+        var emailHelp = document.getElementById('email_help');
+
+        var isValid = true;
+
+        isValid = validateNonEmpty(messageInput, messageHelp) && isValid;
+        isValid = validateBanner(messageInput, messageHelp) && isValid;
+        isValid = validateNonEmpty(zipcodeInput, zipcodeHelp) && isValid;
+        isValid = validateZipCode(zipcodeInput, zipcodeHelp) && isValid;
+        isValid = validateNonEmpty(dateInput, dateHelp) && isValid;
+        isValid = validateDate(dateInput, dateHelp) && isValid;
+        isValid = validateNonEmpty(nameInput, nameHelp) && isValid;
+        isValid = validateName(nameInput, nameHelp) && isValid;
+        isValid = validateNonEmpty(phoneInput, phoneHelp) && isValid;
+        isValid = validatePhone(phoneInput, phoneHelp) && isValid;
+        isValid = validateNonEmpty(emailInput, emailHelp) && isValid;
+        isValid = validateEmail(emailInput, emailHelp) && isValid;
+
+        if (isValid) {
+          // Submit the form if all fields are valid
+          document.forms['orderform'].submit();
+        }
+      }
+    </script>
+  </head>
+
+  <body onload="document.getElementById('message').focus()">
+    <div class="heading">
+      <h1 id="banner-title">Bannerocity</h1>
+    </div>
+
+    <form name="orderform" action="bannerocity.php" method="POST">
+      <div class="field">
+        Enter the banner message:
+        <input id="message" name="message" type="text" size="32"
+          onblur="validateNonEmpty(this, document.getElementById('message_help'))"
+          oninput="validateBanner(this, document.getElementById('message_help'))" />
+        <span id="message_help" class="help"></span>
+      </div>
+      <div class="field">
+        Enter ZIP code of the location:
+        <input id="zipcode" name="zipcode" type="text" size="5"
+          onblur="validateNonEmpty(this, document.getElementById('zipcode_help'))"
+          oninput="validateZipCode(this, document.getElementById('zipcode_help'))" />
+        <span id="zipcode_help" class="help"></span>
+      </div>
+      <div class="field">
+        Enter the date for the message to be shown:
+        <input id="date" name="date" type="text" size="10"
+          onblur="validateNonEmpty(this, document.getElementById('date_help'))"
+          oninput="validateDate(this, document.getElementById('date_help'))" />
+        <span id="date_help" class="help"></span>
+      </div>
+      <div class="field">
+        Enter your name:
+        <input id="name" name="name" type="text" size="32"
+          onblur="validateNonEmpty(this, document.getElementById('name_help'))"
+          oninput="validateName(this, document.getElementById('name_help'))" />
+        <span id="name_help" class="help"></span>
+      </div>
+      <div class="field">
+        Enter your phone number:
+        <input id="phone" name="phone" type="text" size="14"
+          onblur="validateNonEmpty(this, document.getElementById('phone_help'))"
+          oninput="validatePhone(this, document.getElementById('phone_help'))" />
+        <span id="phone_help" class="help"></span>
+      </div>
+      <div class="field">
+        Enter your email address:
+        <input id="email" name="email" type="text" size="32"
+          onblur="validateNonEmpty(this, document.getElementById('email_help'))"
+          oninput="validateEmail(this, document.getElementById('email_help'))" />
+        <span id="email_help" class="help"></span>
+      </div>
+      <input type="button" value="Order Banner" onclick="validateForm()" />
+    </form>
+  </body>
+</html>
+
